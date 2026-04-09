@@ -1,159 +1,6 @@
 'use client';
 import { useState } from 'react';
 
-const JURISDICTIONS: Record<string, any> = {
-  'miami-dade': {
-    name: 'Miami-Dade County, FL',
-    code: 'MDC §33-82 – §33-99',
-    portal: 'https://www.miamidade.gov/permits',
-    strictness: 'Moderate',
-    maxPylon: 35,
-    maxMonument: 8,
-    maxArea: 200,
-    setback: 5,
-    emc: true,
-    turnaround: '6–8 weeks',
-    fee: '$180 + $4/sq ft',
-    notes: 'Signs in the Urban Development Boundary may have additional restrictions. EMC signs must have 8-second minimum hold time.',
-    docs: ['Permit application (Form BP-2)', 'Site plan — 1/4"=1\' scale', 'Elevation drawing with dimensions', 'Electrical calculations (if illuminated)', 'Owner/landlord authorization'],
-  },
-  'broward': {
-    name: 'Broward County, FL',
-    code: 'Broward County Code Ch. 4',
-    portal: 'https://www.broward.org/permits',
-    strictness: 'Moderate',
-    maxPylon: 30,
-    maxMonument: 8,
-    maxArea: 180,
-    setback: 5,
-    emc: true,
-    turnaround: '4–6 weeks',
-    fee: '$150 + $3.50/sq ft',
-    notes: 'Individual municipalities within Broward may have stricter rules. Always verify with the specific city.',
-    docs: ['Completed permit application', 'Two sets of signed/sealed drawings', 'Site plan showing all existing signs', 'Electrical permit (if illuminated)', 'Property owner authorization'],
-  },
-  'pompano-beach': {
-    name: 'City of Pompano Beach, FL',
-    code: 'Pompano Beach Code Ch. 155',
-    portal: 'https://www.pompanobeachfl.gov/permits',
-    strictness: 'Moderate',
-    maxPylon: 30,
-    maxMonument: 8,
-    maxArea: 180,
-    setback: 5,
-    emc: true,
-    turnaround: '4–6 weeks',
-    fee: '$140 + $3.50/sq ft',
-    notes: 'Atlantic Blvd corridor has overlay restrictions. EMC signs require 8-second minimum hold.',
-    docs: ['Pompano Beach permit application', 'Site plan showing all existing signs', 'Construction drawings', 'Property owner authorization'],
-  },
-  'fort-lauderdale': {
-    name: 'City of Fort Lauderdale, FL',
-    code: 'ULDR Ch. 47',
-    portal: 'https://www.fortlauderdale.gov/permits',
-    strictness: 'Moderate',
-    maxPylon: 35,
-    maxMonument: 8,
-    maxArea: 200,
-    setback: 8,
-    emc: true,
-    turnaround: '5–7 weeks',
-    fee: '$160 + $3.75/sq ft',
-    notes: 'Downtown overlay district has stricter requirements. City contractor registration required.',
-    docs: ['FTL permit application', 'Two sets signed drawings', 'Structural calculations (freestanding)', 'City contractor registration', 'Electrical permit (if illuminated)'],
-  },
-  'palm-beach': {
-    name: 'Palm Beach County, FL',
-    code: 'PBC Unified Land Development Code',
-    portal: 'https://www.pbcgov.org/pzb/permits',
-    strictness: 'Moderate',
-    maxPylon: 35,
-    maxMonument: 8,
-    maxArea: 200,
-    setback: 5,
-    emc: true,
-    turnaround: '5–7 weeks',
-    fee: '$155 + $3.50/sq ft',
-    notes: 'Coastal areas and historic districts may have additional restrictions.',
-    docs: ['Permit application', 'Site plan', 'Elevation drawings', 'Electrical calculations', 'Owner authorization'],
-  },
-  'boca-raton': {
-    name: 'City of Boca Raton, FL',
-    code: 'Boca Raton Code Ch. 28',
-    portal: 'https://www.myboca.us/permits',
-    strictness: 'Strict',
-    maxPylon: 20,
-    maxMonument: 6,
-    maxArea: 100,
-    setback: 10,
-    emc: false,
-    turnaround: '8–12 weeks',
-    fee: '$250 + $6/sq ft',
-    notes: 'One of the strictest sign codes in South Florida. No EMC/digital signs allowed in most zones. Design review required.',
-    docs: ['Permit application', 'Design review board approval', 'Site plan', 'Elevation drawings', 'Material samples'],
-  },
-  'miami-beach': {
-    name: 'City of Miami Beach, FL',
-    code: 'Miami Beach Code Ch. 138',
-    portal: 'https://www.miamibeachfl.gov/permits',
-    strictness: 'Strict',
-    maxPylon: 20,
-    maxMonument: 6,
-    maxArea: 100,
-    setback: 10,
-    emc: false,
-    turnaround: '8–12 weeks',
-    fee: '$250 + $6/sq ft',
-    notes: 'Historic districts require design board approval. Art Deco district has special requirements.',
-    docs: ['Permit application', 'Historic preservation review (if applicable)', 'Site plan', 'Elevation drawings', 'Material specifications'],
-  },
-  'orlando': {
-    name: 'City of Orlando, FL',
-    code: 'LDC Ch. 64',
-    portal: 'https://www.orlando.gov/permits',
-    strictness: 'Moderate',
-    maxPylon: 25,
-    maxMonument: 6,
-    maxArea: 150,
-    setback: 10,
-    emc: true,
-    turnaround: '3–5 weeks',
-    fee: '$125 + $3/sq ft',
-    notes: 'Applications submitted through MyPermitNow online portal. EMC signs must meet 0.3 fc max illumination at property line.',
-    docs: ['MyPermitNow online application', 'Sign drawing with specs', 'Contractor license & insurance', 'Electrical permit (if illuminated)'],
-  },
-  'hillsborough': {
-    name: 'Hillsborough County, FL',
-    code: 'Hillsborough County LDC Art. 6',
-    portal: 'https://www.hillsboroughcounty.org/permits',
-    strictness: 'Moderate',
-    maxPylon: 35,
-    maxMonument: 8,
-    maxArea: 200,
-    setback: 5,
-    emc: true,
-    turnaround: '4–6 weeks',
-    fee: '$140 + $3/sq ft',
-    notes: 'Tampa city limits have separate requirements. Verify jurisdiction before applying.',
-    docs: ['Permit application', 'Site plan', 'Elevation drawings', 'Electrical calculations', 'Owner authorization'],
-  },
-  'tampa': {
-    name: 'City of Tampa, FL',
-    code: 'Tampa City Code Ch. 20.5',
-    portal: 'https://www.tampagov.net/permits',
-    strictness: 'Moderate',
-    maxPylon: 30,
-    maxMonument: 8,
-    maxArea: 180,
-    setback: 5,
-    emc: true,
-    turnaround: '4–6 weeks',
-    fee: '$145 + $3.25/sq ft',
-    notes: 'Ybor City historic district has special requirements. Channel District overlay applies downtown.',
-    docs: ['Tampa permit application', 'Site plan', 'Elevation drawings', 'Structural calculations', 'Electrical permit'],
-  },
-};
-
 const CITY_MAP: Record<string, string> = {
   'miami': 'miami-dade',
   'miami-dade': 'miami-dade',
@@ -179,7 +26,6 @@ const CITY_MAP: Record<string, string> = {
   'fort lauderdale': 'fort-lauderdale',
   'ft lauderdale': 'fort-lauderdale',
   'ft. lauderdale': 'fort-lauderdale',
-  'lauderdale': 'fort-lauderdale',
   'boca raton': 'boca-raton',
   'boca': 'boca-raton',
   'delray beach': 'palm-beach',
@@ -206,181 +52,266 @@ function findJurisdiction(query: string): string | null {
   return null;
 }
 
-const strictColor: Record<string, string> = {
-  'Strict': '#FCEBEB',
-  'Moderate': '#FAEEDA',
-  'Permissive': '#EAF3DE',
-};
-const strictText: Record<string, string> = {
-  'Strict': '#791F1F',
-  'Moderate': '#633806',
-  'Permissive': '#27500A',
-};
+function Row({ label, value, highlight }: { label: string; value: string | null | undefined; highlight?: boolean }) {
+  if (!value) return null;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '8px 0', borderBottom: '1px solid #F4F7FA', gap: '16px' }}>
+      <span style={{ fontSize: '12px', color: '#5A6B7A', flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: '12px', fontWeight: '500', color: highlight ? '#185FA5' : '#0D1B2A', textAlign: 'right', maxWidth: '60%' }}>{value}</span>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ padding: '18px 24px', borderBottom: '1px solid #E2E8F0' }}>
+      <div style={{ fontSize: '10px', fontWeight: '700', color: '#9BA8B4', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: '10px' }}>{title}</div>
+      {children}
+    </div>
+  );
+}
 
 export default function LookupPage() {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<any>(null);
-  const [status, setStatus] = useState<'idle'|'loading'|'found'|'notfound'>('idle');
+  const [directInfo, setDirectInfo] = useState<any>(null);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'found' | 'notfound' | 'error'>('idle');
+  const [loadingMsg, setLoadingMsg] = useState('');
 
-  function lookup() {
-    if (!query.trim()) return;
+  async function lookup(q?: string) {
+    const searchQuery = q || query;
+    if (!searchQuery.trim()) return;
+    const key = findJurisdiction(searchQuery);
+    if (!key) { setStatus('notfound'); return; }
     setStatus('loading');
     setResult(null);
-    setTimeout(() => {
-      const key = findJurisdiction(query);
-      if (key && JURISDICTIONS[key]) {
-        setResult(JURISDICTIONS[key]);
+    setDirectInfo(null);
+    const messages = ['Identifying jurisdiction...', 'Fetching official code...', 'Extracting requirements...', 'Organizing data...'];
+    let i = 0;
+    setLoadingMsg(messages[0]);
+    const interval = setInterval(() => { i++; if (i < messages.length) setLoadingMsg(messages[i]); }, 2000);
+    try {
+      const res = await fetch(`/api/lookup?jurisdiction=${key}`);
+      clearInterval(interval);
+      if (!res.ok) { setStatus('error'); return; }
+      const json = await res.json();
+      if (json.success && json.data) {
+        setResult(json.data);
+        setDirectInfo(json.directInfo);
         setStatus('found');
-      } else {
-        setStatus('notfound');
-      }
-    }, 800);
+      } else { setStatus('notfound'); }
+    } catch { clearInterval(interval); setStatus('error'); }
   }
 
-  return (
-    <main style={{minHeight:'100vh',background:'#F4F7FA',fontFamily:'Arial,Helvetica,sans-serif'}}>
+  function quickLookup(city: string) { setQuery(city); lookup(city); }
 
-      {/* NAV */}
-      <nav style={{background:'#fff',borderBottom:'1px solid #E2E8F0',padding:'0 40px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'56px'}}>
-        <a href="/" style={{display:'flex',alignItems:'center',gap:'8px',textDecoration:'none'}}>
-          <svg width="26" height="26" viewBox="0 0 80 80"><rect width="80" height="80" rx="16" fill="#185FA5"/><rect x="10" y="10" width="24" height="24" rx="5" fill="#fff" fillOpacity=".22"/><rect x="46" y="10" width="24" height="24" rx="5" fill="#fff" fillOpacity=".22"/><rect x="10" y="46" width="24" height="24" rx="5" fill="#fff" fillOpacity=".22"/><rect x="46" y="46" width="24" height="24" rx="5" fill="#fff"/><path d="M49.5 60l4 4 8-9" stroke="#185FA5" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
-          <span style={{fontSize:'14px',fontWeight:'700',color:'#0D1B2A'}}>Sign<span style={{color:'#185FA5'}}>Code</span> <span style={{fontSize:'10px',color:'#9BA8B4',fontWeight:'400'}}>Pro</span></span>
+  return (
+    <main style={{ minHeight: '100vh', background: '#F4F7FA', fontFamily: 'Arial,Helvetica,sans-serif' }}>
+
+      <nav style={{ background: '#fff', borderBottom: '1px solid #E2E8F0', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '56px' }}>
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+          <svg width="26" height="26" viewBox="0 0 80 80"><rect width="80" height="80" rx="16" fill="#185FA5" /><rect x="10" y="10" width="24" height="24" rx="5" fill="#fff" fillOpacity=".22" /><rect x="46" y="10" width="24" height="24" rx="5" fill="#fff" fillOpacity=".22" /><rect x="10" y="46" width="24" height="24" rx="5" fill="#fff" fillOpacity=".22" /><rect x="46" y="46" width="24" height="24" rx="5" fill="#fff" /><path d="M49.5 60l4 4 8-9" stroke="#185FA5" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" /></svg>
+          <span style={{ fontSize: '14px', fontWeight: '700', color: '#0D1B2A' }}>Sign<span style={{ color: '#185FA5' }}>Code</span> <span style={{ fontSize: '10px', color: '#9BA8B4', fontWeight: '400' }}>Pro</span></span>
         </a>
-        <a href="/waitlist" style={{padding:'7px 16px',background:'#185FA5',color:'#fff',borderRadius:'7px',fontSize:'13px',fontWeight:'500',textDecoration:'none'}}>Join waitlist</a>
+        <a href="/waitlist" style={{ padding: '7px 16px', background: '#185FA5', color: '#fff', borderRadius: '7px', fontSize: '13px', fontWeight: '500', textDecoration: 'none' }}>Join waitlist</a>
       </nav>
 
-      <div style={{maxWidth:'780px',margin:'0 auto',padding:'48px 24px'}}>
+      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '48px 24px' }}>
 
-        {/* HEADER */}
-        <div style={{textAlign:'center',marginBottom:'36px'}}>
-          <div style={{display:'inline-flex',alignItems:'center',gap:'6px',padding:'4px 12px',borderRadius:'20px',background:'#E6F1FB',color:'#185FA5',fontSize:'12px',fontWeight:'500',marginBottom:'16px'}}>
-            <div style={{width:'5px',height:'5px',borderRadius:'50%',background:'#185FA5'}}></div>
-            AI-powered jurisdiction lookup
+        <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '20px', background: '#E6F1FB', color: '#185FA5', fontSize: '12px', fontWeight: '500', marginBottom: '16px' }}>
+            <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#185FA5' }}></div>
+            Verified data · Florida jurisdictions
           </div>
-          <h1 style={{fontSize:'28px',fontWeight:'700',color:'#0D1B2A',marginBottom:'10px'}}>Look up any Florida jurisdiction</h1>
-          <p style={{fontSize:'14px',color:'#5A6B7A',lineHeight:'1.6'}}>Enter any city, county, or address in Florida to get instant sign code requirements.</p>
+          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#0D1B2A', marginBottom: '10px' }}>Florida sign code lookup</h1>
+          <p style={{ fontSize: '14px', color: '#5A6B7A', lineHeight: '1.6' }}>Enter any city or county to get sign code requirements, fees, documents, and direct contact info.</p>
         </div>
 
-        {/* SEARCH */}
-        <div style={{background:'#fff',borderRadius:'12px',border:'1px solid #E2E8F0',padding:'20px',marginBottom:'20px'}}>
-          <div style={{display:'flex',gap:'10px'}}>
+        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', gap: '10px' }}>
             <input
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && lookup()}
-              placeholder="e.g. 1500 Biscayne Blvd, Miami — or just type Miami-Dade, Pompano Beach, Orlando..."
-              style={{flex:1,padding:'11px 14px',border:'1px solid #E2E8F0',borderRadius:'8px',fontSize:'13px',color:'#0D1B2A',background:'#fff',outline:'none'}}
+              placeholder="Type a city or county — e.g. Miami, Pompano Beach, Orlando..."
+              style={{ flex: 1, padding: '11px 14px', border: '1px solid #E2E8F0', borderRadius: '8px', fontSize: '13px', color: '#0D1B2A', outline: 'none' }}
             />
-            <button
-              onClick={lookup}
-              disabled={status==='loading'}
-              style={{padding:'11px 22px',background:'#185FA5',color:'#fff',border:'none',borderRadius:'8px',fontSize:'13px',fontWeight:'500',cursor:'pointer',whiteSpace:'nowrap'}}
-            >
-              {status==='loading' ? 'Searching...' : 'Look up code'}
+            <button onClick={() => lookup()} disabled={status === 'loading'}
+              style={{ padding: '11px 22px', background: status === 'loading' ? '#9BA8B4' : '#185FA5', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '500', cursor: status === 'loading' ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}>
+              {status === 'loading' ? 'Loading...' : 'Look up'}
             </button>
           </div>
-
-          {/* Quick picks */}
-          <div style={{marginTop:'12px',display:'flex',gap:'8px',flexWrap:'wrap'}}>
-            <span style={{fontSize:'11px',color:'#9BA8B4'}}>Quick:</span>
-            {['Miami-Dade','Fort Lauderdale','Pompano Beach','Boca Raton','Orlando','Tampa'].map(c => (
-              <button key={c} onClick={() => { setQuery(c); setTimeout(() => { const k = findJurisdiction(c); if(k && JURISDICTIONS[k]){setResult(JURISDICTIONS[k]);setStatus('found');}}, 50); }} style={{padding:'3px 10px',border:'1px solid #E2E8F0',borderRadius:'20px',fontSize:'11px',color:'#5A6B7A',background:'#fff',cursor:'pointer'}}>{c}</button>
+          <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: '11px', color: '#9BA8B4' }}>Quick:</span>
+            {['Miami', 'Fort Lauderdale', 'Pompano Beach', 'Boca Raton', 'Miami Beach', 'Orlando', 'Tampa'].map(c => (
+              <button key={c} onClick={() => quickLookup(c)} style={{ padding: '3px 10px', border: '1px solid #E2E8F0', borderRadius: '20px', fontSize: '11px', color: '#5A6B7A', background: '#fff', cursor: 'pointer' }}>{c}</button>
             ))}
           </div>
         </div>
 
-        {/* NOT FOUND */}
-        {status==='notfound' && (
-          <div style={{background:'#FAEEDA',border:'1px solid #F5C4B3',borderRadius:'10px',padding:'16px 20px',marginBottom:'20px',fontSize:'13px',color:'#633806'}}>
-            We don't have data for that jurisdiction yet. <strong>South Florida and Orlando</strong> are fully covered. More jurisdictions coming soon — <a href="/waitlist" style={{color:'#185FA5'}}>join the waitlist</a> to get notified.
+        {status === 'loading' && (
+          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '32px', textAlign: 'center' }}>
+            <div style={{ width: '20px', height: '20px', border: '2px solid #E2E8F0', borderTopColor: '#185FA5', borderRadius: '50%', animation: 'spin .7s linear infinite', margin: '0 auto 14px' }}></div>
+            <div style={{ fontSize: '13px', color: '#5A6B7A' }}>{loadingMsg}</div>
+            <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
           </div>
         )}
 
-        {/* RESULT */}
-        {status==='found' && result && (
-          <div style={{background:'#fff',borderRadius:'12px',border:'1px solid #E2E8F0',overflow:'hidden'}}>
+        {status === 'notfound' && (
+          <div style={{ background: '#FAEEDA', border: '1px solid #F5C4B3', borderRadius: '10px', padding: '16px 20px', fontSize: '13px', color: '#633806' }}>
+            We don't have data for that jurisdiction yet. Try Miami, Fort Lauderdale, Pompano Beach, Boca Raton, Miami Beach, Orlando, or Tampa. More coming soon — <a href="/waitlist" style={{ color: '#185FA5' }}>join the waitlist</a>.
+          </div>
+        )}
 
-            {/* Result header */}
-            <div style={{padding:'20px 24px',borderBottom:'1px solid #E2E8F0',display:'flex',alignItems:'flex-start',justifyContent:'space-between'}}>
+        {status === 'error' && (
+          <div style={{ background: '#FCEBEB', border: '1px solid #F7C1C1', borderRadius: '10px', padding: '16px 20px', fontSize: '13px', color: '#791F1F' }}>
+            Something went wrong. Please try again.
+          </div>
+        )}
+
+        {status === 'found' && result && (
+          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+
+            {/* Header */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
               <div>
-                <div style={{fontSize:'18px',fontWeight:'700',color:'#0D1B2A',marginBottom:'3px'}}>{result.name}</div>
-                <div style={{fontSize:'12px',color:'#9BA8B4'}}>{result.code}</div>
+                <div style={{ fontSize: '20px', fontWeight: '700', color: '#0D1B2A', marginBottom: '4px' }}>{result.name}</div>
+                <div style={{ fontSize: '11px', color: '#9BA8B4' }}>Research verified · {result.codeRef || directInfo?.codeRef || 'Official code'}</div>
               </div>
-              <span style={{padding:'4px 10px',borderRadius:'20px',fontSize:'12px',fontWeight:'500',background:strictColor[result.strictness],color:strictText[result.strictness]}}>{result.strictness}</span>
+              <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', background: '#EAF3DE', color: '#27500A' }}>
+                ✓ Verified
+              </span>
             </div>
 
-            {/* Data grid */}
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0',borderBottom:'1px solid #E2E8F0'}}>
-              <div style={{padding:'20px 24px',borderRight:'1px solid #E2E8F0'}}>
-                <div style={{fontSize:'10px',fontWeight:'600',color:'#9BA8B4',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:'14px'}}>Size limits</div>
-                {[
-                  ['Max pylon height', result.maxPylon + ' ft'],
-                  ['Max monument height', result.maxMonument + ' ft'],
-                  ['Max sign area (B-2)', result.maxArea + ' sq ft'],
-                  ['Min setback from ROW', result.setback + ' ft'],
-                  ['EMC / digital signs', result.emc ? 'Allowed' : 'Not allowed'],
-                ].map(([l,v]) => (
-                  <div key={l as string} style={{display:'flex',justifyContent:'space-between',padding:'7px 0',borderBottom:'1px solid #F4F7FA',fontSize:'13px'}}>
-                    <span style={{color:'#5A6B7A'}}>{l}</span>
-                    <span style={{fontWeight:'500',color:l==='EMC / digital signs'?(result.emc?'#3B6D11':'#791F1F'):'#0D1B2A'}}>{v}</span>
-                  </div>
-                ))}
+            {/* Size limits */}
+            <Section title="Size limits">
+              <Row label="Max pylon / pole sign height" value={result.maxPylonHeight ? result.maxPylonHeight + ' ft' : 'Varies by district'} />
+              <Row label="Max monument / ground sign height" value={result.maxMonumentHeight ? result.maxMonumentHeight + ' ft' : 'Varies by district'} />
+              <Row label="Max sign area (typical commercial)" value={result.maxSignArea ? result.maxSignArea + ' sq ft' : 'Based on building frontage'} />
+              <Row label="Min setback from ROW" value={result.minSetback ? result.minSetback + ' ft' : 'Varies'} />
+              <Row label="Max letter height" value={result.letterHeightMax} />
+            </Section>
+
+            {/* EMC / Digital */}
+            <Section title="EMC / Digital signs">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                <span style={{ fontSize: '12px', color: '#5A6B7A' }}>EMC / digital signs allowed:</span>
+                <span style={{ fontSize: '12px', fontWeight: '600', color: result.emcAllowed === true ? '#27500A' : result.emcAllowed === false ? '#791F1F' : '#633806' }}>
+                  {result.emcAllowed === true ? '✓ Yes' : result.emcAllowed === false ? '✗ No / Heavily restricted' : 'Limited — verify with jurisdiction'}
+                </span>
               </div>
-              <div style={{padding:'20px 24px'}}>
-                <div style={{fontSize:'10px',fontWeight:'600',color:'#9BA8B4',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:'14px'}}>Fees & timeline</div>
-                {[
-                  ['Permit fee', result.fee],
-                  ['Avg. turnaround', result.turnaround],
-                  ['Official portal', result.portal],
-                ].map(([l,v]) => (
-                  <div key={l as string} style={{display:'flex',justifyContent:'space-between',padding:'7px 0',borderBottom:'1px solid #F4F7FA',fontSize:'13px'}}>
-                    <span style={{color:'#5A6B7A'}}>{l}</span>
-                    {l==='Official portal'
-                      ? <a href={v as string} target="_blank" rel="noreferrer" style={{color:'#185FA5',textDecoration:'none',fontWeight:'500',fontSize:'12px'}}>View portal</a>
-                      : <span style={{fontWeight:'500',color:'#0D1B2A'}}>{v}</span>
-                    }
-                  </div>
-                ))}
-              </div>
-            </div>
+              {result.emcNotes && <div style={{ fontSize: '12px', color: '#5A6B7A', lineHeight: '1.6', background: '#F4F7FA', padding: '10px', borderRadius: '7px' }}>{result.emcNotes}</div>}
+            </Section>
+
+            {/* Engineering & Inspections */}
+            <Section title="Engineering & inspections">
+              <Row label="Engineer seal required" value={result.engineerSealThreshold} />
+              <Row label="Illumination standards" value={result.illuminationNotes} />
+              <Row label="Inspections" value={result.inspectionRequired} />
+            </Section>
+
+            {/* Fees & Timeline */}
+            <Section title="Fees & timeline">
+              <Row label="Permit fee" value={result.permitFee} />
+              <Row label="Typical turnaround" value={result.turnaround} />
+            </Section>
 
             {/* Required docs */}
-            <div style={{padding:'20px 24px',borderBottom:'1px solid #E2E8F0'}}>
-              <div style={{fontSize:'10px',fontWeight:'600',color:'#9BA8B4',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:'14px'}}>Required documents</div>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
-                {result.docs.map((d: string) => (
-                  <div key={d} style={{display:'flex',alignItems:'center',gap:'8px',fontSize:'13px',color:'#0D1B2A'}}>
-                    <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#185FA5',flexShrink:0}}></div>
-                    {d}
-                  </div>
-                ))}
-              </div>
+            {result.requiredDocs && result.requiredDocs.length > 0 && (
+              <Section title="Required documents">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {result.requiredDocs.map((d: string, i: number) => (
+                    <div key={i} style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#0D1B2A' }}>
+                      <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#185FA5', flexShrink: 0, marginTop: '5px' }}></div>
+                      {d}
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )}
+
+            {/* Key restrictions */}
+            {result.keyRestrictions && (
+              <Section title="Key restrictions">
+                <div style={{ fontSize: '12px', color: '#5A6B7A', lineHeight: '1.7' }}>{result.keyRestrictions}</div>
+              </Section>
+            )}
+
+            {/* Overlay districts */}
+            {result.overlayDistricts && (
+              <Section title="Overlay districts & special areas">
+                <div style={{ fontSize: '12px', color: '#5A6B7A', lineHeight: '1.7', background: '#FFF8E6', padding: '10px', borderRadius: '7px', border: '1px solid #F5C4B3' }}>
+                  ⚠ {result.overlayDistricts}
+                </div>
+              </Section>
+            )}
+
+            {/* Practitioner notes */}
+            {result.practitionerNotes && (
+              <Section title="Practitioner notes">
+                <div style={{ fontSize: '12px', color: '#0C447C', lineHeight: '1.7', background: '#E6F1FB', padding: '10px', borderRadius: '7px' }}>
+                  💡 {result.practitionerNotes}
+                </div>
+              </Section>
+            )}
+
+            {/* Direct contact */}
+            {directInfo && (
+              <Section title="Direct contact">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {directInfo.phone && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                      <span style={{ color: '#9BA8B4', width: '60px' }}>Phone</span>
+                      <a href={`tel:${directInfo.phone}`} style={{ color: '#185FA5', fontWeight: '500' }}>{directInfo.phone}</a>
+                      {directInfo.secondPhone && <><span style={{ color: '#9BA8B4' }}>·</span><a href={`tel:${directInfo.secondPhone}`} style={{ color: '#185FA5' }}>{directInfo.secondPhone}</a></>}
+                    </div>
+                  )}
+                  {directInfo.email && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                      <span style={{ color: '#9BA8B4', width: '60px' }}>Email</span>
+                      <a href={`mailto:${directInfo.email}`} style={{ color: '#185FA5' }}>{directInfo.email}</a>
+                    </div>
+                  )}
+                  {directInfo.address && (
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '12px' }}>
+                      <span style={{ color: '#9BA8B4', width: '60px', flexShrink: 0 }}>Address</span>
+                      <span style={{ color: '#0D1B2A' }}>{directInfo.address}</span>
+                    </div>
+                  )}
+                  {directInfo.portalUrl && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                      <span style={{ color: '#9BA8B4', width: '60px' }}>Portal</span>
+                      <a href={directInfo.portalUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#185FA5' }}>{directInfo.portalLabel}</a>
+                    </div>
+                  )}
+                  {directInfo.feeEstimator && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                      <span style={{ color: '#9BA8B4', width: '60px' }}>Fees</span>
+                      <a href={directInfo.feeEstimator} target="_blank" rel="noopener noreferrer" style={{ color: '#185FA5' }}>Fee estimator →</a>
+                    </div>
+                  )}
+                </div>
+              </Section>
+            )}
+
+            {/* Footer */}
+            <div style={{ padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F4F7FA' }}>
+              <div style={{ fontSize: '11px', color: '#9BA8B4' }}>Always verify with the jurisdiction before submitting. Codes change.</div>
+              <a href="/waitlist" style={{ padding: '7px 16px', background: '#185FA5', color: '#fff', borderRadius: '7px', fontSize: '12px', fontWeight: '500', textDecoration: 'none' }}>Get full access →</a>
             </div>
 
-            {/* Notes */}
-            <div style={{padding:'20px 24px',background:'#F4F7FA',borderBottom:'1px solid #E2E8F0'}}>
-              <div style={{fontSize:'10px',fontWeight:'600',color:'#9BA8B4',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:'8px'}}>Practitioner notes</div>
-              <div style={{fontSize:'13px',color:'#5A6B7A',lineHeight:'1.6'}}>{result.notes}</div>
-            </div>
-
-            {/* CTA */}
-            <div style={{padding:'16px 24px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <div style={{fontSize:'12px',color:'#9BA8B4'}}>Data verified by SignCode Pro team · Updated April 2025</div>
-              <a href="/waitlist" style={{padding:'8px 18px',background:'#185FA5',color:'#fff',borderRadius:'7px',fontSize:'12px',fontWeight:'500',textDecoration:'none'}}>Get full access →</a>
-            </div>
           </div>
         )}
 
-        {/* Covered jurisdictions */}
-        {status==='idle' && (
-          <div style={{background:'#fff',borderRadius:'12px',border:'1px solid #E2E8F0',padding:'20px 24px'}}>
-            <div style={{fontSize:'12px',fontWeight:'600',color:'#0D1B2A',marginBottom:'14px'}}>Currently covered — Florida</div>
-            <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'8px'}}>
-              {Object.values(JURISDICTIONS).map((j: any) => (
-                <div key={j.name} style={{padding:'8px 12px',background:'#F4F7FA',borderRadius:'7px',fontSize:'12px',color:'#5A6B7A'}}>{j.name}</div>
+        {status === 'idle' && (
+          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px 24px' }}>
+            <div style={{ fontSize: '12px', fontWeight: '600', color: '#0D1B2A', marginBottom: '14px' }}>Currently covered — Florida</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px' }}>
+              {['Miami-Dade County', 'Broward County', 'Palm Beach County', 'City of Fort Lauderdale', 'City of Pompano Beach', 'City of Boca Raton', 'City of Miami Beach', 'City of Orlando', 'City of Tampa', 'Hillsborough County'].map(j => (
+                <div key={j} style={{ padding: '8px 12px', background: '#F4F7FA', borderRadius: '7px', fontSize: '12px', color: '#5A6B7A' }}>{j}</div>
               ))}
             </div>
-            <div style={{fontSize:'11px',color:'#9BA8B4',marginTop:'14px'}}>More jurisdictions added weekly. <a href="/waitlist" style={{color:'#185FA5'}}>Join the waitlist</a> to request your jurisdiction.</div>
+            <div style={{ fontSize: '11px', color: '#9BA8B4', marginTop: '14px' }}>More jurisdictions added weekly. <a href="/waitlist" style={{ color: '#185FA5' }}>Join the waitlist</a> to request yours.</div>
           </div>
         )}
 
